@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FitBuddy</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Vue.js -->
+  <script src="https://unpkg.com/vue@3"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- HEADER -->
+    <header>
+      <h1>💪 FitBuddy</h1>
+      <p class="tagline">Din personliga träningsplanerare</p>
+    </header>
+
+    <!-- USER LOGIN -->
+    <section class="user-section" v-if="!usernameConfirmed">
+      <p class="intro-text">Skriv ditt namn!</p>
+      <input type="text" id="username" v-model="username" placeholder="Ex. Alex">
+      <button @click="confirmUsername" :disabled="!username">Starta</button>
+    </section>
+
+    <!-- MAIN CONTENT (v-if usernameConfirmed) -->
+    <main v-if="usernameConfirmed">
+      <h2>Välkommen, {{ username }}!</h2>
+
+      <div class="content-grid">
+        <!-- ADD WORKOUT FORM -->
+        <section class="card form-card">
+          <h3>Lägg till träningspass</h3>
+          <div class="form-group">
+            <label>Dag:</label>
+            <input type="text" v-model="newDay" placeholder="Ex. Måndag">
+          </div>
+          <div class="form-group">
+            <label>Övning:</label>
+            <input type="text" v-model="newExercise" placeholder="Ex. Benböj">
+          </div>
+          <div class="form-group">
+            <label>Reps/Tid:</label>
+            <input type="text" v-model="newReps" placeholder="Ex. 3x12">
+          </div>
+          <button @click="addWorkout">➕ Lägg till pass</button>
+        </section>
+
+        <!-- WORKOUT LIST -->
+        <section class="card list-card">
+          <h3>Dina träningspass</h3>
+          <div class="filter">
+            <button @click="toggleFilter">
+              {{ showImportantOnly ? "Visa alla pass" : "Visa viktiga pass" }}
+            </button>
+          </div>
+          <ul>
+            <li v-for="(pass, index) in filteredWorkouts" :key="index" 
+                :class="{ important: pass.important }">
+              <div class="workout-info">
+                <span class="day">{{ pass.day }}</span>:
+                <span class="exercise">{{ pass.exercise }}</span> 
+                <span class="reps">({{ pass.reps }})</span>
+              </div>
+              <div class="actions">
+                <button class="star" @click="toggleImportant(pass)">
+                  {{ pass.important ? "⭐" : "☆" }}
+                </button>
+                <button class="remove" @click="removeWorkout(index)">🗑️</button>
+              </div>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
