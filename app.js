@@ -16,7 +16,10 @@ createApp({
       muscleGroups: [],
 
       dayObjects: [],
-      showImportantOnly: false
+      showImportantOnly: false,
+
+      showAssignModal: false,
+      showExerciseModal: false
     };
   },
 

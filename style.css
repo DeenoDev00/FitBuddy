@@ -1,5 +1,5 @@
 /* Basic reset */
-* { box-sizing:border-box; margin:0; padding:0; }
+* { box-sizing: border-box; margin:0; padding:0; }
 :root{
   --bg1:#0f172a; --accent1:#22c55e; --accent2:#06b6d4; --glass: rgba(255,255,255,0.08);
   --muted: rgba(255,255,255,0.6);
@@ -32,12 +32,23 @@ body{
 .welcome-card input{ padding:0.8rem 1rem; width:100%; max-width:320px; border-radius:999px; border:none; outline:none; margin-bottom:0.8rem;}
 .welcome-card button{ padding:0.7rem 1.4rem; border-radius:999px; border:none; background:linear-gradient(90deg,var(--accent1),var(--accent2)); cursor:pointer; font-weight:600;}
 
+/* Center main content */
+.content-grid {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
 /* App grid */
 .app-grid{ display:grid; grid-template-columns: 360px 1fr; gap:1rem; width:100%; max-width:1200px; }
 
 /* Cards */
-.card{ background:var(--glass); padding:1rem; border-radius:12px; box-shadow: 0 6px 20px rgba(0,0,0,0.6); }
-.card h3{ margin-bottom:0.5rem; }
+.card{ background:rgba(255,255,255,0.10); padding:2rem 1.5rem; border-radius:18px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); margin-bottom:2rem; min-width:320px; max-width:400px; transition: box-shadow 0.2s; }
+.card:hover { box-shadow: 0 12px 40px rgba(34,197,94,0.18); }
+.card h3{ margin-bottom:1rem; font-size:1.4rem; color: var(--accent1); letter-spacing: 0.5px; }
 
 /* Left column */
 .left-col .form-row{ margin:0.6rem 0; display:flex; flex-direction:column; gap:0.4rem; }
@@ -59,9 +70,107 @@ body{
 .day-body{ margin-top:0.6rem; padding-top:0.6rem; border-top:1px dashed rgba(255,255,255,0.04); }
 .exercise-items{ display:flex; flex-direction:column; gap:0.5rem; margin-top:0.4rem; }
 .exercise-items li{ display:flex; justify-content:space-between; align-items:center; padding:0.5rem; border-radius:8px; background: rgba(255,255,255,0.02); }
-.exercise-items li.important{ border-left:4px solid #facc15; background: rgba(250,204,21,0.06); }
+.exercise-items li.important{ border-left:4px solid #facc15; background: rgba(250,204,21,0.10); }
 .exercise-main{ display:flex; gap:0.6rem; align-items:center; }
 .exercise-actions button{ background:none; border:none; color:#fff; font-size:1.1rem; cursor:pointer; margin-left:0.4rem; }
+
+/* Form fields */
+.form-group {
+  margin-bottom: 1rem;
+}
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+.form-group input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 1rem;
+  margin-top: 0.2rem;
+  transition: background 0.2s;
+}
+.form-group input:focus {
+  background: rgba(34,197,94,0.12);
+  outline: 2px solid var(--accent1);
+}
+
+/* Buttons */
+button {
+  background: linear-gradient(90deg,var(--accent1),var(--accent2));
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+button:hover, button:focus {
+  background: linear-gradient(90deg,var(--accent2),var(--accent1));
+  box-shadow: 0 2px 12px rgba(34,197,94,0.18);
+  outline: none;
+}
+
+/* List improvements */
+.list-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.group-header, .day-header {
+  background: rgba(34,197,94,0.08);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.group-header:hover, .day-header:hover, .group-header:focus, .day-header:focus {
+  background: rgba(6,182,212,0.18);
+  outline: 2px solid var(--accent2);
+}
+
+.workout-info {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+}
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.star {
+  font-size: 1.2rem;
+  background: none;
+  border: none;
+  color: #facc15;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.star:hover, .star:focus {
+  color: #fde68a;
+}
+.remove {
+  font-size: 1.2rem;
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.remove:hover, .remove:focus {
+  color: #f87171;
+}
 
 /* small text */
 .small{ color:var(--muted); font-size:0.9rem; }
@@ -69,9 +178,76 @@ body{
 /* empty */
 .empty{ color:var(--muted); font-style:italic; padding:0.5rem; }
 
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-card {
+  background: #222;
+  padding: 2rem 1.5rem;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+  min-width: 320px;
+  max-width: 400px;
+}
+.modal-card h3 {
+  margin-bottom: 1rem;
+}
+.modal-card .form-row {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.modal-card label {
+  font-weight: 600;
+}
+.modal-card input, .modal-card select {
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+.modal-card .btn-row {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+  flex-wrap: wrap;
+}
+
+/* User greeting */
+.user-greeting {
+  margin-top: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--accent1);
+  background: rgba(255,255,255,0.08);
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  display: inline-block;
+}
+
 /* Responsive */
 @media (max-width: 980px){
-  .app-grid{ grid-template-columns:1fr; }
+  .app-grid{ grid-template-columns: 1fr; }
   .left-col{ order:2; }
   .right-col{ order:1; }
+}
+@media (max-width: 800px) {
+  .content-grid {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  .card {
+    min-width: unset;
+    max-width: 100%;
+  }
 }

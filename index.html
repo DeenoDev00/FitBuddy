@@ -21,6 +21,9 @@
     <header class="site-header">
       <h1>💪 FitBuddy</h1>
       <p class="tagline">Planera din vecka — dag för dag</p>
+      <div v-if="usernameConfirmed" class="user-greeting">
+        <span>👋 {{ username }}</span>
+      </div>
     </header>
 
     <section class="center-area" v-if="!usernameConfirmed">
@@ -33,75 +36,19 @@
     </section>
 
     <main v-else class="app-grid">
-      <aside class="left-col">
-        <section class="card assign-card">
-          <h3>1) Tilldela muskelgrupp till dag</h3>
-          <p class="small">Välj en dag och tilldela en muskelgrupp. Måste göras innan du lägger till övningar.</p>
-
-          <!-- ⚠️ Viktig ändring här: vi loopar dayObjects istället för days -->
-          <div class="form-row">
-            <label>Dag</label>
-            <select v-model="selectedAssignDay">
-              <option disabled value="">Välj dag</option>
-              <option v-for="d in dayObjects" :key="d.name" :value="d.name">{{ d.name }}</option>
-            </select>
-          </div>
-
-          <div class="form-row">
-            <label>Muskelgrupp</label>
-            <select v-model="selectedMuscle">
-              <option disabled value="">Välj muskelgrupp</option>
-              <option v-for="m in muscleGroups" :key="m" :value="m">{{ m }}</option>
-            </select>
-          </div>
-
-          <div class="btn-row">
-            <button @click="assignMuscleToDay" :disabled="!selectedAssignDay || !selectedMuscle">Tilldela</button>
-            <button class="muted" @click="clearAssignments">Återställ</button>
-          </div>
-        </section>
-
-        <section class="card add-exercise-card">
-          <h3>2) Lägg till övning</h3>
-          <p class="small">Välj en redan tilldelad dag och lägg till övningar.</p>
-
-          <div class="form-row">
-            <label>Dag (endast tilldelade)</label>
-            <select v-model="selectedDayForExercise">
-              <option disabled value="">Välj dag</option>
-              <option v-for="d in assignedDays" :key="d.name" :value="d.name">{{ d.name }} — {{ d.muscle }}</option>
-            </select>
-          </div>
-
-          <div class="form-row">
-            <label>Övning</label>
-            <input type="text" v-model="exerciseName" placeholder="Ex. Bänkpress">
-          </div>
-
-          <div class="form-row">
-            <label>Reps/Tid</label>
-            <input type="text" v-model="exerciseReps" placeholder="Ex. 3x10">
-          </div>
-
-          <div class="btn-row">
-            <button @click="addExerciseToDay" :disabled="!selectedDayForExercise || !exerciseName || !exerciseReps">➕ Lägg till övning</button>
-            <button class="muted" @click="clearExerciseForm">Rensa</button>
-          </div>
-        </section>
-
-        <section class="card settings-card">
-          <h3>Visning & filter</h3>
-          <p class="small">Filtrera för att se endast markerade (viktiga) övningar</p>
-          <div class="btn-row">
-            <button @click="toggleFilter">{{ showImportantOnly ? 'Visa alla' : 'Visa bara viktiga' }}</button>
-            <button class="muted" @click="markAllNotImportant">Ta bort ⭐</button>
-          </div>
-        </section>
-      </aside>
-
-      <section class="right-col">
+      <section class="right-col" style="width:100%;">
+        <div style="display:flex; gap:1rem; justify-content:flex-end; margin-bottom:1rem;">
+          <button @click="showAssignModal = true">➕ Tilldela muskelgrupp</button>
+          <button @click="showExerciseModal = true">➕ Lägg till övning</button>
+        </div>
         <div class="card days-card">
-          <h3>Veckoschema (Måndag → Fredag)</h3>
+          <div class="days-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <h3>Veckoschema (Måndag → Fredag)</h3>
+            <div class="btn-row">
+              <button @click="toggleFilter">{{ showImportantOnly ? 'Visa alla' : 'Visa bara viktiga' }}</button>
+              <button class="muted" @click="markAllNotImportant">Ta bort ⭐</button>
+            </div>
+          </div>
           <ul class="days-list">
             <li v-for="(d, index) in dayObjects" :key="d.name" class="day-item">
               <div class="day-top" :class="{ locked: !d.muscle }">
@@ -140,6 +87,61 @@
           </ul>
         </div>
       </section>
+
+      <!-- Modal: Tilldela muskelgrupp -->
+      <div v-if="showAssignModal" class="modal-overlay" @click.self="showAssignModal = false">
+        <div class="modal-card">
+          <h3>Tilldela muskelgrupp till dag</h3>
+          <p class="small">Välj en dag och tilldela en muskelgrupp. Måste göras innan du lägger till övningar.</p>
+          <div class="form-row">
+            <label for="assign-day">Dag:</label>
+            <select id="assign-day" v-model="selectedAssignDay">
+              <option disabled value="">Välj dag</option>
+              <option v-for="d in dayObjects" :key="d.name" :value="d.name">{{ d.name }}</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="assign-muscle">Muskelgrupp:</label>
+            <select id="assign-muscle" v-model="selectedMuscle">
+              <option disabled value="">Välj muskelgrupp</option>
+              <option v-for="m in muscleGroups" :key="m">{{ m }}</option>
+            </select>
+          </div>
+          <div v-if="formError && formError.length" class="error-message">{{ formError }}</div>
+          <div class="btn-row">
+            <button @click="assignMuscleToDay">Spara</button>
+            <button class="muted" @click="showAssignModal = false">Stäng</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: Lägg till övning -->
+      <div v-if="showExerciseModal" class="modal-overlay" @click.self="showExerciseModal = false">
+        <div class="modal-card">
+          <h3>Lägg till övning</h3>
+          <p class="small">Välj en redan tilldelad dag och lägg till övningar.</p>
+          <div class="form-row">
+            <label for="exercise-day">Dag:</label>
+            <select id="exercise-day" v-model="selectedDayForExercise">
+              <option disabled value="">Välj dag</option>
+              <option v-for="d in assignedDays" :key="d.name" :value="d.name">{{ d.name }}</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="exercise-name">Övning:</label>
+            <input id="exercise-name" type="text" v-model="exerciseName" placeholder="Ex. Benböj">
+          </div>
+          <div class="form-row">
+            <label for="exercise-reps">Reps/Tid:</label>
+            <input id="exercise-reps" type="text" v-model="exerciseReps" placeholder="Ex. 3x12">
+          </div>
+          <div v-if="formError && formError.length" class="error-message">{{ formError }}</div>
+          <div class="btn-row">
+            <button @click="addExerciseToDay">Spara</button>
+            <button class="muted" @click="showExerciseModal = false">Stäng</button>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 
